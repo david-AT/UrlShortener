@@ -1,6 +1,12 @@
 package urlshortener.web;
 
 import java.net.URI;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import java.net.MalformedURLException;
+import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.http.HttpHeaders;
@@ -38,14 +44,49 @@ public class UrlShortenerController {
     }
   }
 
+  // Función auxiliar que comprueba si se puede establecer conexión con una URL.
+  private boolean esAccesibleURL(String urlDir){
+    try {
+      URL url = new URL(urlDir);
+      HttpURLConnection http = (HttpURLConnection)url.openConnection();
+      int statusCode = http.getResponseCode();
+      if (statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  // Función auxiliar que comprueba si se puede establecer conexión con una URL (v2).
+  private boolean esAccesibleURLv2(String urlDir){
+    try {
+      URL url = new URL(urlDir);
+      URLConnection conn = url.openConnection();
+      conn.connect();
+      return true;
+    } catch (MalformedURLException e) {
+      // La URL está mal formada (error sintáctico)
+      return false;
+    } catch (IOException e) {
+      // La URL no es accesible
+      return false;
+    }
+  }
+
   @RequestMapping(value = "/link", method = RequestMethod.POST)
   public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
                                             @RequestParam(value = "sponsor", required = false)
                                                 String sponsor,
                                             HttpServletRequest request) {
-    UrlValidator urlValidator = new UrlValidator(new String[] {"http",
-        "https"});
-    if (urlValidator.isValid(url)) {
+    // Comprobar que la URL tiene una sintaxis correcta
+    UrlValidator urlValidator = new UrlValidator(new String[] {"http", "https"});
+    // Comprobar que la URL es también accesible (Status Code 200)
+    boolean esAccesible = esAccesibleURL(url);
+    
+    if (urlValidator.isValid(url) && esAccesible) {
       ShortURL su = shortUrlService.save(url, sponsor, request.getRemoteAddr());
       HttpHeaders h = new HttpHeaders();
       h.setLocation(su.getUri());
