@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import urlshortener.domain.ShortURL;
 import urlshortener.service.ClickService;
 import urlshortener.service.ShortURLService;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartException;
 
 @RestController
 public class UrlShortenerController {
@@ -94,6 +96,17 @@ public class UrlShortenerController {
     } else {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @RequestMapping(value = "/linkCSV", method = RequestMethod.POST)
+  public ResponseEntity<ShortURL> shortenerCSV(@RequestParam("csv") MultipartFile csv,
+                                            @RequestParam(value = "sponsor", required = false) String sponsor,
+                                            HttpServletRequest request) 
+                                            throws MultipartException, IllegalStateException, IOException{
+    String URLsExtracted = new String(csv.getBytes());
+    String[] URLs= URLsExtracted.split("\n");
+    System.out.println(URLs[0]);
+    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
   }
 
   private String extractIP(HttpServletRequest request) {
