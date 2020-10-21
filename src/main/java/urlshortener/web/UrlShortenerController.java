@@ -5,6 +5,13 @@ import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import com.opencsv.CSVWriter;
+
 import java.net.MalformedURLException;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,34 +32,38 @@ import org.springframework.web.multipart.MultipartException;
 
 @RestController
 public class UrlShortenerController {
-  private final ShortURLService shortUrlService;
 
+  private final ShortURLService shortUrlService;
   private final ClickService clickService;
+
+  //--------------------------------CONSTRUCTOR--------------------------------
 
   public UrlShortenerController(ShortURLService shortUrlService, ClickService clickService) {
     this.shortUrlService = shortUrlService;
     this.clickService = clickService;
   }
 
-  @RequestMapping(value = "/{id:(?!link|index).*}", method = RequestMethod.GET)
-  public ResponseEntity<?> redirectTo(@PathVariable String id,
-                                      HttpServletRequest request) {
-    ShortURL l = shortUrlService.findByKey(id);
-    if (l != null) {
-      clickService.saveClick(id, extractIP(request));
-      return createSuccessfulRedirectToResponse(l);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+  //----------------------------FUNCIONES-PRIVADAS-----------------------------
+
+  private String extractIP(HttpServletRequest request) {
+    return request.getRemoteAddr();
+  }
+
+  private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
+    HttpHeaders h = new HttpHeaders();
+    h.setLocation(URI.create(l.getTarget()));
+    return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
   }
 
   // Función auxiliar que comprueba si se puede establecer conexión con una URL.
   private boolean esAccesibleURL(String urlDir){
     try {
+      UrlValidator urlValidator = new UrlValidator(new String[] {"http", "https"});
+      boolean sintaxOK = urlValidator.isValid(urlDir);
       URL url = new URL(urlDir);
       HttpURLConnection http = (HttpURLConnection)url.openConnection();
       int statusCode = http.getResponseCode();
-      if (statusCode == 200) {
+      if (sintaxOK && (statusCode == 200)) {
         return true;
       } else {
         return false;
@@ -78,17 +89,46 @@ public class UrlShortenerController {
     }
   }
 
+  // Función que comprueba si una lista de URLs es accesible
+  private List<Boolean> sonAccesiblesURLs(String[] urlsDir){
+    List<Boolean> list = new ArrayList<Boolean>();
+    for (String url: urlsDir) {
+      list.add(esAccesibleURL(url));
+    }
+    return list;
+  }
+
+  // Función que acorta una lista de URLs 
+  private List<String> acortarURLs(String[] urlsDir,String sponsor,HttpServletRequest request){
+    List<String> list = new ArrayList<String>();
+    for (String url: urlsDir) {
+      list.add(((shortUrlService.save(url, sponsor, request.getRemoteAddr())).getUri()).toString());
+    }
+    return list;
+  }
+
+  //----------------------------FUNCIONES-PÚBLICAS-----------------------------
+
+  @RequestMapping(value = "/{id:(?!link|index).*}", method = RequestMethod.GET)
+  public ResponseEntity<?> redirectTo(@PathVariable String id,
+                                      HttpServletRequest request) {
+    ShortURL l = shortUrlService.findByKey(id);
+    if (l != null) {
+      clickService.saveClick(id, extractIP(request));
+      return createSuccessfulRedirectToResponse(l);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+  }
+
   @RequestMapping(value = "/link", method = RequestMethod.POST)
   public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
                                             @RequestParam(value = "sponsor", required = false)
                                                 String sponsor,
                                             HttpServletRequest request) {
-    // Comprobar que la URL tiene una sintaxis correcta
-    UrlValidator urlValidator = new UrlValidator(new String[] {"http", "https"});
-    // Comprobar que la URL es también accesible (Status Code 200)
+    // Comprobar que la URL tiene una sintaxis correcta y que es también accesible (StatusCode_200)
     boolean esAccesible = esAccesibleURL(url);
-    
-    if (urlValidator.isValid(url) && esAccesible) {
+    if (esAccesible) {
       ShortURL su = shortUrlService.save(url, sponsor, request.getRemoteAddr());
       HttpHeaders h = new HttpHeaders();
       h.setLocation(su.getUri());
@@ -99,23 +139,32 @@ public class UrlShortenerController {
   }
 
   @RequestMapping(value = "/linkCSV", method = RequestMethod.POST)
-  public ResponseEntity<ShortURL> shortenerCSV(@RequestParam("csv") MultipartFile csv,
+  public ResponseEntity<String> shortenerCSV(@RequestParam("csv") MultipartFile csv,
                                             @RequestParam(value = "sponsor", required = false) String sponsor,
                                             HttpServletRequest request) 
                                             throws MultipartException, IllegalStateException, IOException{
+    // Tratar las URLs
     String URLsExtracted = new String(csv.getBytes());
     String[] URLs= URLsExtracted.split("\n");
-    System.out.println(URLs[0]);
-    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-  }
+    List<Boolean> accesibles = sonAccesiblesURLs(URLs);
+    List<String> acortadas = acortarURLs(URLs,sponsor,request);
 
-  private String extractIP(HttpServletRequest request) {
-    return request.getRemoteAddr();
-  }
+    // Crear el CSV nuevo
+    StringWriter strW = new StringWriter();
+    CSVWriter writeCSV = new CSVWriter(strW);
+    for (int i = 0; i < URLs.length; i++){
+      String[] newLine = {URLs[i],acortadas.get(i)};
+      writeCSV.writeNext(newLine);
+    }
+    writeCSV.close();
+    String result = strW.toString();
 
-  private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
+    // Devolver el CSV
     HttpHeaders h = new HttpHeaders();
-    h.setLocation(URI.create(l.getTarget()));
-    return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+    h.add(HttpHeaders.CONTENT_TYPE, "text/csv");
+    h.add(HttpHeaders.CONTENT_LENGTH, Integer.toString(result.length()));
+    h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=response.csv");
+    return new ResponseEntity<>(result, h, HttpStatus.CREATED);
   }
+
 }
