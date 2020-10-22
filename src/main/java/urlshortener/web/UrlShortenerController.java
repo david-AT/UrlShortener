@@ -109,6 +109,7 @@ public class UrlShortenerController {
 
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
+  // FUnción encargada de hacer la redirección (GET)
   @RequestMapping(value = "/{id:(?!link|index).*}", method = RequestMethod.GET)
   public ResponseEntity<?> redirectTo(@PathVariable String id,
                                       HttpServletRequest request) {
@@ -121,6 +122,7 @@ public class UrlShortenerController {
     }
   }
 
+  // Función encargada de coger la URL introducida por el usuario y acortarla
   @RequestMapping(value = "/link", method = RequestMethod.POST)
   public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
                                             @RequestParam(value = "sponsor", required = false)
@@ -138,6 +140,7 @@ public class UrlShortenerController {
     }
   }
 
+  // Función encargada de coger el CSV subido por el usuario y acortar el contenido
   @RequestMapping(value = "/linkCSV", method = RequestMethod.POST)
   public ResponseEntity<String> shortenerCSV(@RequestParam("csv") MultipartFile csv,
                                             @RequestParam(value = "sponsor", required = false) String sponsor,
@@ -145,6 +148,9 @@ public class UrlShortenerController {
                                             throws MultipartException, IllegalStateException, IOException{
     // Tratar las URLs
     String URLsExtracted = new String(csv.getBytes());
+    if (URLsExtracted.equals("")) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
     String[] URLs= URLsExtracted.split("\n");
     List<Boolean> accesibles = sonAccesiblesURLs(URLs);
     List<String> acortadas = acortarURLs(URLs,sponsor,request);
@@ -153,7 +159,8 @@ public class UrlShortenerController {
     StringWriter strW = new StringWriter();
     CSVWriter writeCSV = new CSVWriter(strW);
     for (int i = 0; i < URLs.length; i++){
-      String[] newLine = {URLs[i],acortadas.get(i)};
+      // TODO: Cuando se haga escalable, quitar el booleano de "accesibles"
+      String[] newLine = {URLs[i],acortadas.get(i),accesibles.get(i).toString()};
       writeCSV.writeNext(newLine);
     }
     writeCSV.close();
@@ -163,7 +170,7 @@ public class UrlShortenerController {
     HttpHeaders h = new HttpHeaders();
     h.add(HttpHeaders.CONTENT_TYPE, "text/csv");
     h.add(HttpHeaders.CONTENT_LENGTH, Integer.toString(result.length()));
-    h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=response.csv");
+    h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=URLsRecortadas.csv");
     return new ResponseEntity<>(result, h, HttpStatus.CREATED);
   }
 
