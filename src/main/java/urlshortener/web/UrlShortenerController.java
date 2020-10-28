@@ -1,15 +1,17 @@
 package urlshortener.web;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
+import java.util.*;
 import java.io.StringWriter;
+
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.opencsv.CSVWriter;
 
 import java.net.MalformedURLException;
@@ -29,6 +31,9 @@ import urlshortener.service.ClickService;
 import urlshortener.service.ShortURLService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartException;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
 @RestController
 public class UrlShortenerController {
@@ -107,6 +112,12 @@ public class UrlShortenerController {
     return list;
   }
 
+  // Función que genera un QR a través de una URL
+  public static void createQR(String data, String path, String charset, int height, int width) throws WriterException, IOException {
+    BitMatrix matrix = new MultiFormatWriter().encode(new String(data.getBytes(charset), charset), BarcodeFormat.QR_CODE, width, height);
+    MatrixToImageWriter.writeToPath(matrix, path.substring(path.lastIndexOf('.') + 1), Paths.get(path));
+  }
+
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
   // FUnción encargada de hacer la redirección (GET)
@@ -127,15 +138,17 @@ public class UrlShortenerController {
   public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
                                             @RequestParam(value = "sponsor", required = false)
                                                 String sponsor,
-                                            HttpServletRequest request) {
+                                            HttpServletRequest request) throws IOException, WriterException, InterruptedException {
     // Comprobar que la URL tiene una sintaxis correcta y que es también accesible (StatusCode_200)
     boolean esAccesible = esAccesibleURL(url);
     if (esAccesible) {
       ShortURL su = shortUrlService.save(url, sponsor, request.getRemoteAddr());
       HttpHeaders h = new HttpHeaders();
       h.setLocation(su.getUri());
+      createQR(su.getUri().toString(), "./src/main/resources/static/js/qr.png", "UTF-8", 100, 100);
       return new ResponseEntity<>(su, h, HttpStatus.CREATED);
-    } else {
+    }
+    else {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
   }

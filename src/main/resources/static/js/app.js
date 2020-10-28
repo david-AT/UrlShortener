@@ -13,7 +13,9 @@ $(document).ready(
                             + msg.uri
                             + "'>"
                             + msg.uri
-                            + "</a></div>");
+                            +"</a></div>" +
+                            "<img src=\"js/qr.png\">" );
+
                     },
                     error: function () {
                         $("#result").html(
