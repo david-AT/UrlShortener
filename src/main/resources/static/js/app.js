@@ -13,8 +13,7 @@ $(document).ready(
                             + msg.uri
                             + "'>"
                             + msg.uri
-                            +"</a></div>" +
-                            "<img src=\"js/qr.png\">" );
+                            +"</a></div>");
 
                     },
                     error: function () {

@@ -1,39 +1,23 @@
 package urlshortener.web;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URLConnection;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import java.nio.file.Paths;
-import java.util.*;
-import java.io.StringWriter;
-
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.opencsv.CSVWriter;
-
-import java.net.MalformedURLException;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.MultipartFile;
 import urlshortener.domain.ShortURL;
 import urlshortener.service.ClickService;
 import urlshortener.service.ShortURLService;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartException;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class UrlShortenerController {
@@ -112,12 +96,6 @@ public class UrlShortenerController {
     return list;
   }
 
-  // Función que genera un QR a través de una URL
-  public static void createQR(String data, String path, String charset, int height, int width) throws WriterException, IOException {
-    BitMatrix matrix = new MultiFormatWriter().encode(new String(data.getBytes(charset), charset), BarcodeFormat.QR_CODE, width, height);
-    MatrixToImageWriter.writeToPath(matrix, path.substring(path.lastIndexOf('.') + 1), Paths.get(path));
-  }
-
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
   // FUnción encargada de hacer la redirección (GET)
@@ -138,14 +116,13 @@ public class UrlShortenerController {
   public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
                                             @RequestParam(value = "sponsor", required = false)
                                                 String sponsor,
-                                            HttpServletRequest request) throws IOException, WriterException, InterruptedException {
+                                            HttpServletRequest request) throws Exception {
     // Comprobar que la URL tiene una sintaxis correcta y que es también accesible (StatusCode_200)
     boolean esAccesible = esAccesibleURL(url);
     if (esAccesible) {
       ShortURL su = shortUrlService.save(url, sponsor, request.getRemoteAddr());
       HttpHeaders h = new HttpHeaders();
       h.setLocation(su.getUri());
-      createQR(su.getUri().toString(), "./src/main/resources/static/js/qr.png", "UTF-8", 100, 100);
       return new ResponseEntity<>(su, h, HttpStatus.CREATED);
     }
     else {
