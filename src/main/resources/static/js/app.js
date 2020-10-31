@@ -1,3 +1,4 @@
+var aux = null;
 $(document).ready(
     function () {
         $("#shortener").submit(
@@ -61,11 +62,17 @@ $(document).ready(
                     success: function (msg) {
                         var outputImg = document.createElement('img');
                         outputImg.src = 'data:image/png;base64,'+msg;
-                        document.body.appendChild(outputImg);
+                        if ( aux == null ) {
+                            document.body.appendChild(outputImg);
+                        }
+                        else {
+                            document.body.replaceChild(outputImg, aux);
+                        }
+                        aux = outputImg;
                         $("#QRresult").html(
                             "<div class='alert alert-success lead'>"
                             + "QR generated"
-                            + "</div>");
+                            +"</div>");
                     },
                     error: function () {
                         $("#QRresult").html(
