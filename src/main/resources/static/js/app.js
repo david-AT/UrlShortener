@@ -50,4 +50,27 @@ $(document).ready(
                     }
                 });
             });
+
+        $("#qrgenerator").submit(
+            function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "/linkQR",
+                    data: $(this).serialize(),
+                    success: function (msg) {
+                        var outputImg = document.createElement('img');
+                        outputImg.src = 'data:image/png;base64,'+msg;
+                        document.body.appendChild(outputImg);
+                        $("#QRresult").html(
+                            "<div class='alert alert-success lead'>"
+                            + "QR generated"
+                            + "</div>");
+                    },
+                    error: function () {
+                        $("#QRresult").html(
+                            "<div class='alert alert-danger lead'>ERROR</div>");
+                    }
+                });
+            });
     });

@@ -29,7 +29,6 @@ dependencies {
     implementation 'commons-io:commons-io:2.8.0'
     implementation group: 'net.glxn.qrgen', name: 'javase', version: '2.0'
 
-
     runtime 'org.webjars:bootstrap:3.3.5'
     runtime 'org.webjars:jquery:2.1.4'
 
