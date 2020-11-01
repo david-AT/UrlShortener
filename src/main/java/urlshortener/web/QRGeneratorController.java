@@ -52,7 +52,7 @@ public class QRGeneratorController {
 
     // Función encargada de coger la URL dada, acortarla y generar un código QR con esa URL acortada
     @RequestMapping(value = "/linkQR", method = RequestMethod.POST)
-    public ResponseEntity<String> qrgenerator(@RequestParam("url") String url,
+    public ResponseEntity<ShortURL> qrgenerator(@RequestParam("url") String url,
                                               @RequestParam(value = "sponsor", required = false)
                                                       String sponsor,
                                               HttpServletRequest request) throws Exception {
@@ -66,8 +66,8 @@ public class QRGeneratorController {
 
             // Pasamos de byte[] a base64 String
             String encodedQR = Base64.getEncoder().encodeToString(generateQRCodeImage(su.getUri().toString()));
-
-            return new ResponseEntity<>(encodedQR, h, HttpStatus.CREATED);
+            su.setQR(encodedQR);
+            return new ResponseEntity<>(su, h, HttpStatus.CREATED);
         }
         else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -1,4 +1,5 @@
 var aux = null;
+var aux2 = null;
 $(document).ready(
     function () {
         $("#shortener").submit(
@@ -60,19 +61,13 @@ $(document).ready(
                     url: "/linkQR",
                     data: $(this).serialize(),
                     success: function (msg) {
-                        var outputImg = document.createElement('img');
-                        outputImg.src = 'data:image/png;base64,'+msg;
-                        if ( aux == null ) {
-                            document.body.appendChild(outputImg);
-                        }
-                        else {
-                            document.body.replaceChild(outputImg, aux);
-                        }
-                        aux = outputImg;
                         $("#QRresult").html(
-                            "<div class='alert alert-success lead'>"
-                            + "QR generated"
-                            +"</div>");
+                            "<div class='alert alert-success lead'><a target='_blank' href='"
+                                + msg.uri
+                                + "'>"
+                                + msg.uri
+                                +"</a></div>"
+                                + "<img src=data:image/jpg;base64," + msg.qr +" />");
                     },
                     error: function () {
                         $("#QRresult").html(
