@@ -10,17 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class UserAgentsController {
-    private String browser;
-    private String operativeSystem;
+    
     //--------------------------------CONSTRUCTOR--------------------------------
 
     public UserAgentsController() { }
 
     //----------------------------FUNCIONES-PRIVADAS-----------------------------
-    private void setAttributes(String browser, String operativeSystem) {
-        this.browser = browser;
-        this.operativeSystem = operativeSystem;
-    }
 
 
     //----------------------------FUNCIONES-PÚBLICAS-----------------------------
