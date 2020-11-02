@@ -63,14 +63,43 @@ $(document).ready(
                     success: function (msg) {
                         $("#QRresult").html(
                             "<div class='alert alert-success lead'><a target='_blank' href='"
+                                + "URL Shortened:"
                                 + msg.uri
                                 + "'>"
                                 + msg.uri
                                 +"</a></div>"
-                                + "<img src=data:image/jpg;base64," + msg.qr +" />");
+                                //+ "<img src=data:image/jpg;base64," + msg.qr +" />"
+                                + "<div class='alert alert-success lead'><a target='_blank' href='"
+                                + msg.qr
+                                + "'>"
+                                + msg.qr
+                                +"</a></div>");
                     },
                     error: function () {
                         $("#QRresult").html(
+                            "<div class='alert alert-danger lead'>ERROR</div>");
+                    }
+                });
+            });
+
+        $("#showUserAgents").submit(
+            function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "/userAgents",
+                    data: $(this).serialize(),
+                    success: function (msg) {
+                        var browser = msg[0];
+                        var so = msg[1];
+                        $("#Agentsresult").html(
+                            "<div class='alert alert-success lead'><p class='lead'>Navegador:</p><p id=\"browser\"></p>"
+                            + "<p class='lead'>Sistema Operativo:</p><p id=\"so\"></p></div>");
+                        document.getElementById("browser").innerHTML = browser;
+                        document.getElementById("so").innerHTML = so;
+                    },
+                    error: function () {
+                        $("#Agentsresult").html(
                             "<div class='alert alert-danger lead'>ERROR</div>");
                     }
                 });
