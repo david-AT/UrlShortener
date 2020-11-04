@@ -140,6 +140,16 @@ public class ClickRepositoryImpl implements ClickRepository {
   }
 
   @Override
+  public List<Click> list() {
+    try {
+      return jdbc.query("SELECT * FROM click", rowMapper);
+    } catch (Exception e) {
+      log.debug("When select {}", e);
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
   public Long clicksByHash(String hash) {
     try {
       return jdbc

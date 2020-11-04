@@ -20,4 +20,6 @@ public interface ClickRepository {
   Long count();
 
   List<Click> list(Long limit, Long offset);
+
+  List<Click> list();
 }
