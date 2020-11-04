@@ -35,25 +35,25 @@ public class DBInfoController {
 
   //----------------------------FUNCIONES-PRIVADAS-----------------------------
 
+  // Función que asocia a cada URL almacenada el nuemro de clicks asociados a ella
+  private List<String> consultarBase() {
+    List<String> data = new ArrayList<String>();
+    List<ShortURL> listUrl = shortURLRepository.list();
+    for (ShortURL s: listUrl){
+      Long count = clickRepository.clicksByHash(s.getHash());
+      data.add(s.getTarget() + " -> " + count);
+    }
+    return data;
+  }
+
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
-  // Función encargada de devolver la información de la Base de Datos
+  // Función encargada de devolver la información de la Base de Datos (URL -> numClicks)
   @RequestMapping(value = "/DBInfo", method = RequestMethod.POST)
-  public ResponseEntity<List<Click>> getDBInfo (@RequestParam("num") int num, HttpServletRequest request) {
-    try {
-      List<Click> listClick = clickRepository.list();
-      List<ShortURL> listUrl = shortURLRepository.list();
-      for (ShortURL s: listUrl){
-        System.out.println(s.getHash());
-      }
-      System.out.println("--------");
-      for (Click c: listClick){
-        System.out.println(c.getHash());
-      }
-      return new ResponseEntity<>(listClick, HttpStatus.CREATED);
-    } catch (NullPointerException e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
+  public ResponseEntity<List<String>> getDBInfo (HttpServletRequest request) {
+    // Leer info de la BD y combinarla
+    List<String> data = consultarBase();
+    return new ResponseEntity<>(data, HttpStatus.CREATED);
   }
 
 }
