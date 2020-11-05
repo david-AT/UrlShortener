@@ -104,4 +104,28 @@ $(document).ready(
                     }
                 });
             });
+
+        $("#DBInfo").submit(
+            function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: "/DBInfo",
+                    data: $(this).serialize(),
+                    success: function (msg) {
+                        if (msg.length == 0) {
+                            $("#DBresult").html("<div class='alert alert-danger lead'>ERROR</div>");
+                        } else {
+                            var htmlInfo = "";
+                            msg.forEach(element => 
+                                htmlInfo = htmlInfo + "<p class='lead'>" + element + "</p><br/>");
+                            $("#DBresult").html(htmlInfo);
+                        }
+                    },
+                    error: function () {
+                        $("#DBresult").html(
+                            "<div class='alert alert-danger lead'>ERROR</div>");
+                    }
+                });
+            });
     });
