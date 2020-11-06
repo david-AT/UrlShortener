@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class UserAgentsController {
-    
+
     //--------------------------------CONSTRUCTOR--------------------------------
 
     public UserAgentsController() { }

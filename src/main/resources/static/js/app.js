@@ -62,18 +62,13 @@ $(document).ready(
                     data: $(this).serialize(),
                     success: function (msg) {
                         $("#QRresult").html(
-                            "<div class='alert alert-success lead'><a target='_blank' href='"
-                                + "URL Shortened:"
-                                + msg.uri
-                                + "'>"
-                                + msg.uri
-                                +"</a></div>"
-                                //+ "<img src=data:image/jpg;base64," + msg.qr +" />"
-                                + "<div class='alert alert-success lead'><a target='_blank' href='"
-                                + msg.qr
-                                + "'>"
-                                + msg.qr
-                                +"</a></div>");
+                            "<img src=\"data:image/png;base64, " + msg.qr + "\" />"
+                                  + "<div class='alert alert-success lead'><a target='_blank' href='"
+                                  + "data:image/png;base64, " + msg.qr
+                                  + "'>"
+                                  + msg.uri+".png"
+                                  + "</a></div>");
+
                     },
                     error: function () {
                         $("#QRresult").html(

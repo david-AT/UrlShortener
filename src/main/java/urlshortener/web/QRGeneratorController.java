@@ -50,7 +50,7 @@ public class QRGeneratorController {
 
     //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
-    // Función encargada de coger la URL dada, acortarla y generar un código QR con esa URL acortada
+    // Función encargada de coger la URL acortada creada y generar un código QR con esa URL acortada
     @RequestMapping(value = "/linkQR", method = RequestMethod.POST)
     public ResponseEntity<ShortURL> qrgenerator(@RequestParam("url") String url,
                                               @RequestParam(value = "sponsor", required = false)
