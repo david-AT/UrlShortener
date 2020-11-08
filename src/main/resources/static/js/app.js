@@ -109,7 +109,7 @@ $(document).ready(
                     data: $(this).serialize(),
                     success: function (msg) {
                         if (msg.length == 0) {
-                            $("#DBresult").html("<div class='alert alert-danger lead'>ERROR</div>");
+                            $("#DBresult").html("<p class='lead' style=\"color:red\"><b>Data Base is empty</b></p><br/>");
                         } else {
                             var htmlInfo = "";
                             msg.forEach(element => 

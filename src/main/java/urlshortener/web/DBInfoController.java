@@ -39,10 +39,13 @@ public class DBInfoController {
   private List<String> consultarBase() {
     List<String> data = new ArrayList<String>();
     List<ShortURL> listUrl = shortURLRepository.list();
+    String aux = "";
     for (ShortURL s: listUrl){
       Long count = clickRepository.clicksByHash(s.getHash());
-      data.add(s.getTarget() + " -> " + count);
+      aux = "(" + Long.toString(count) + " clicks) " + s.getTarget();
+      data.add(aux);
     }
+    Collections.sort(data, Collections.reverseOrder());
     return data;
   }
 
