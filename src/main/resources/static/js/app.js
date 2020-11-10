@@ -1,5 +1,3 @@
-var aux = null;
-var aux2 = null;
 $(document).ready(
     function () {
         $("#shortener").submit(
@@ -85,13 +83,36 @@ $(document).ready(
                     url: "/userAgents",
                     data: $(this).serialize(),
                     success: function (msg) {
-                        var browser = msg[0];
-                        var so = msg[1];
+                        const chrome = msg[0];
+                        const firefox = msg[1];
+                        const ie = msg[2];
+                        const opera = msg[3];
+
+                        const windows = msg[6];
+                        const linux = msg[7];
+                        const ios = msg[4];
+                        const android = msg[5];
                         $("#Agentsresult").html(
-                            "<div class='alert alert-success lead'><p class='lead'>Navegador:</p><p id=\"browser\"></p>"
-                            + "<p class='lead'>Sistema Operativo:</p><p id=\"so\"></p></div>");
-                        document.getElementById("browser").innerHTML = browser;
-                        document.getElementById("so").innerHTML = so;
+                            "<div class='alert alert-success lead'><p class='lead'><b>Navegadores:<b></p>"
+                            + "<p id=\"chrome\"></p>"
+                            + "<p id=\"firefox\"></p>"
+                            + "<p id=\"ie\"></p>"
+                            + "<p id=\"opera\"></p>"
+                            + "<br>"
+                            + "<p class='lead'><b>Sistemas operativos:<b></p>"
+                            + "<p id=\"windows\"></p>"
+                            + "<p id=\"linux\"></p>"
+                            + "<p id=\"ios\"></p>"
+                            + "<p id=\"android\"></p>"
+                            + "</div>");
+                        document.getElementById("chrome").innerHTML = chrome;
+                        document.getElementById("firefox").innerHTML = firefox;
+                        document.getElementById("ie").innerHTML = ie;
+                        document.getElementById("opera").innerHTML = opera;
+                        document.getElementById("windows").innerHTML = windows;
+                        document.getElementById("linux").innerHTML = linux;
+                        document.getElementById("ios").innerHTML = ios;
+                        document.getElementById("android").innerHTML = android;
                     },
                     error: function () {
                         $("#Agentsresult").html(
@@ -109,7 +130,7 @@ $(document).ready(
                     data: $(this).serialize(),
                     success: function (msg) {
                         if (msg.length == 0) {
-                            $("#DBresult").html("<p class='lead' style=\"color:red\"><b>Data Base is empty</b></p><br/>");
+                            $("#DBresult").html("<p class='lead' style=\"color:#ff0000\"><b>Data Base is empty</b></p><br/>");
                         } else {
                             var htmlInfo = "";
                             msg.forEach(element => 
