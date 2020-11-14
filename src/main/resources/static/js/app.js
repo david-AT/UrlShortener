@@ -79,7 +79,7 @@ $(document).ready(
             function (event) {
                 event.preventDefault();
                 $.ajax({
-                    type: "POST",
+                    type: "GET",
                     url: "/userAgents",
                     data: $(this).serialize(),
                     success: function (msg) {

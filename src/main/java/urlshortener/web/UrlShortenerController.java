@@ -1,5 +1,6 @@
 package urlshortener.web;
 
+import eu.bitwalker.useragentutils.UserAgent;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import urlshortener.domain.ShortURL;
 import urlshortener.repository.AccesibleURLRepository;
 import urlshortener.service.ClickService;
 import urlshortener.service.ShortURLService;
+import urlshortener.service.UserAgentsService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.*;
@@ -19,12 +21,15 @@ public class UrlShortenerController {
   private final ShortURLService shortUrlService;
   private final ClickService clickService;
   private final AccesibleURLRepository accesibleURLRepository;
+  private final UserAgentsService userAgentsService;
 
   //--------------------------------CONSTRUCTOR--------------------------------
 
-  public UrlShortenerController(ShortURLService shortUrlService, ClickService clickService, AccesibleURLRepository accesibleURLRepository) {
+  public UrlShortenerController(ShortURLService shortUrlService, ClickService clickService, AccesibleURLRepository accesibleURLRepository,
+                                UserAgentsService userAgentsService) {
     this.shortUrlService = shortUrlService;
     this.clickService = clickService;
+    this.userAgentsService = userAgentsService;
     this.accesibleURLRepository = accesibleURLRepository;
   }
 
@@ -44,11 +49,16 @@ public class UrlShortenerController {
 
   // FUnción encargada de hacer la redirección (GET)
   @RequestMapping(value = "/{id:(?!link|index).*}", method = RequestMethod.GET)
-  public ResponseEntity<?> redirectTo(@PathVariable String id,
+  public ResponseEntity<?> redirectTo(@PathVariable String id, @RequestHeader("User-Agent") String agents,
                                       HttpServletRequest request) {
     ShortURL l = shortUrlService.findByKey(id);
     if (l != null) {
       clickService.saveClick(id, extractIP(request));
+      if ( agents != null ) {
+        UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+        String[] datos = {userAgent.getBrowser().getName(), userAgent.getOperatingSystem().getName()};
+        this.userAgentsService.updateInformation(datos);
+      }
       return createSuccessfulRedirectToResponse(l);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
