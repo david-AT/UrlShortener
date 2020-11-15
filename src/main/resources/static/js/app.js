@@ -82,24 +82,25 @@ $(document).ready(
                     type: "GET",
                     url: "/userAgents",
                     data: $(this).serialize(),
+                    dataType: "json",
                     success: function (msg) {
-                        const chrome = msg[0];
-                        const firefox = msg[1];
-                        const ie = msg[2];
-                        const opera = msg[3];
+                        const chrome = msg.Chrome;
+                        const firefox = msg.Firefox;
+                        const ie = msg.InternetExplorer;
+                        const opera = msg.Opera;
 
-                        const windows = msg[6];
-                        const linux = msg[7];
-                        const ios = msg[4];
-                        const android = msg[5];
+                        const windows = msg.Windows;
+                        const linux = msg.Linux;
+                        const ios = msg.iOS;
+                        const android = msg.Android;
                         $("#Agentsresult").html(
                             "<div class='alert alert-success lead'><p class='lead'><b>Navegadores:<b></p>"
                             + "<p id=\"chrome\"></p>"
                             + "<p id=\"firefox\"></p>"
                             + "<p id=\"ie\"></p>"
                             + "<p id=\"opera\"></p>"
-                            + "<br>"
-                            + "<p class='lead'><b>Sistemas operativos:<b></p>"
+                            + "</div>"
+                            + "<div class='alert alert-success lead'><p class='lead'><b>Sistemas Operativos:<b></p>"
                             + "<p id=\"windows\"></p>"
                             + "<p id=\"linux\"></p>"
                             + "<p id=\"ios\"></p>"
