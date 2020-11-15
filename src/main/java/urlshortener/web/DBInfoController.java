@@ -52,8 +52,8 @@ public class DBInfoController {
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
   // Función encargada de devolver la información de la Base de Datos (URL -> numClicks)
-  @RequestMapping(value = "/DBInfo", method = RequestMethod.POST)
-  public ResponseEntity<List<String>> getDBInfo (HttpServletRequest request) {
+  @RequestMapping(value = "/DBInfo", method = RequestMethod.GET)
+  public ResponseEntity<List<String>> getDBInfo () {
     // Leer info de la BD y combinarla
     List<String> data = consultarBase();
     return new ResponseEntity<>(data, HttpStatus.CREATED);

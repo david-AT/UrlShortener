@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import urlshortener.service.ClickService;
 import urlshortener.service.ShortURLService;
@@ -89,6 +91,15 @@ public class CsvShortenerController {
     h.add(HttpHeaders.CONTENT_TYPE, "text/csv");
     h.add(HttpHeaders.CONTENT_LENGTH, Integer.toString(result.length()));
     h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=URLsRecortadas.csv");
+
+    // Devolver también un recurso location con cualquier URI
+    try {
+      URI someURI = new URI(acortadas.get(0));
+      h.setLocation(someURI);
+    } catch (URISyntaxException e) {
+      System.out.println("Create some URI error");
+    }
+
     return new ResponseEntity<>(result, h, HttpStatus.CREATED);
   }
 

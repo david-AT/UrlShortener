@@ -126,7 +126,7 @@ $(document).ready(
             function (event) {
                 event.preventDefault();
                 $.ajax({
-                    type: "POST",
+                    type: "GET",
                     url: "/DBInfo",
                     data: $(this).serialize(),
                     success: function (msg) {
