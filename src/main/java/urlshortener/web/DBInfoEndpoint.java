@@ -1,40 +1,18 @@
 package urlshortener.web;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.io.StringWriter;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-// ---------------
 import org.springframework.stereotype.Component;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
-import javax.xml.ws.Endpoint;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
-import org.springframework.web.bind.annotation.ResponseBody;
-// ---------------
-
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartException;
+import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.info.Info;
 
 import urlshortener.repository.ShortURLRepository;
 import urlshortener.repository.ClickRepository;
-import urlshortener.domain.Click;
 import urlshortener.domain.ShortURL;
 
 @Component
-@RestControllerEndpoint(id = "dbinfo-endpoint")
-public class DBInfoEndpoint {
+// Clase que personaliza en endpoint "/actuator/info"
+public class DBInfoEndpoint implements InfoContributor{
 
   private final ShortURLRepository shortURLRepository;
   private final ClickRepository clickRepository;
@@ -64,12 +42,13 @@ public class DBInfoEndpoint {
 
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
-  // Función encargada de devolver la información de la Base de Datos (URL -> numClicks)
-  @GetMapping("/dbinfo")
-  public ResponseEntity<List<String>> getDBInfo() {
+  // Método @Override encargado de poner la info. de la BD (URL -> numClicks)
+  // en el endpoint denominado "localhost:8080/actuator/info".
+  @Override
+  public void contribute(Info.Builder builder) {
     // Leer info de la BD y combinarla
     List<String> data = consultarBase();
-    return new ResponseEntity<List<String>>(data, HttpStatus.CREATED);
+    builder.withDetail("Information about App Data Base", data);
   }
 
 }
