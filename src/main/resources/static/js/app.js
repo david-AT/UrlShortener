@@ -8,13 +8,28 @@ $(document).ready(
                     url: "/link",
                     data: $(this).serialize(),
                     success: function (msg) {
-                        $("#result").html(
-                            "<div class='alert alert-success lead'><a target='_blank' href='"
+                        console.log(msg)
+                        if (msg.qr != null) {
+                            resultado = "<div class ='alert alert-success lead'><div target='_blank' href='"
                             + msg.uri
                             + "'>"
                             + msg.uri
-                            +"</a></div>");
+                            + "</div>"
 
+                            + "<div class ='alert alert-success lead'><a target='_blank' href='"
+                            + "data:image/png;base64, " + msg.qr
+                            + "'>"
+                            + msg.uri+ ".png"
+                            + "</a></div>"
+                        }
+                        else {
+                            resultado = "<div class ='alert alert-success lead'><a target='_blank' href='"
+                            + msg.uri
+                            + "'>"
+                            + msg.uri
+                            + "</a></div>"
+                        }
+                        $("#result").html(resultado);
                     },
                     error: function () {
                         $("#result").html(
@@ -46,30 +61,6 @@ $(document).ready(
                     },
                     error: function () {
                         $("#CSVresult").html(
-                            "<div class='alert alert-danger lead'>ERROR</div>");
-                    }
-                });
-            });
-
-        $("#qrgenerator").submit(
-            function (event) {
-                event.preventDefault();
-                $.ajax({
-                    type: "POST",
-                    url: "/linkQR",
-                    data: $(this).serialize(),
-                    success: function (msg) {
-                        $("#QRresult").html(
-                            "<img src=\"data:image/png;base64, " + msg.qr + "\" />"
-                                  + "<div class='alert alert-success lead'><a target='_blank' href='"
-                                  + "data:image/png;base64, " + msg.qr
-                                  + "'>"
-                                  + msg.uri+".png"
-                                  + "</a></div>");
-
-                    },
-                    error: function () {
-                        $("#QRresult").html(
                             "<div class='alert alert-danger lead'>ERROR</div>");
                     }
                 });

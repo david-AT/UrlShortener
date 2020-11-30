@@ -15,7 +15,7 @@ public class ShortURL {
   private Boolean safe;
   private String ip;
   private String country;
-  private String qr;
+  private byte[] qr;
 
   public ShortURL(String hash, String target, URI uri, String sponsor,
                   Date created, String owner, Integer mode, Boolean safe, String ip,
@@ -30,6 +30,7 @@ public class ShortURL {
     this.safe = safe;
     this.ip = ip;
     this.country = country;
+    this.qr = null;
   }
 
   public ShortURL() {
@@ -75,7 +76,7 @@ public class ShortURL {
     return country;
   }
 
-  public String getQR() { return qr; }
+  public byte[] getQR() { return qr; }
 
-  public void setQR( String encodedQR ) { this.qr = encodedQR; }
+  public void setQR( byte[] QRcode ) { this.qr = QRcode; }
 }
