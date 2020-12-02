@@ -29,6 +29,12 @@ dependencies {
     implementation 'com.google.zxing:core:3.4.1'
     implementation 'com.google.zxing:javase:3.4.1'
     implementation 'commons-io:commons-io:2.8.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.webjars:webjars-locator-core'
+	implementation 'org.webjars:sockjs-client:1.0.2'
+	implementation 'org.webjars:stomp-websocket:2.3.3'
+
     implementation group: 'net.glxn.qrgen', name: 'javase', version: '2.0'
     implementation group: 'eu.bitwalker', name: 'UserAgentUtils', version: '1.17'
 
