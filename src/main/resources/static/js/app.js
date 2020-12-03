@@ -17,9 +17,9 @@ $(document).ready(
                             + "</div>"
 
                             + "<div class ='alert alert-success lead'><a target='_blank' href='"
-                            + "data:image/png;base64, " + msg.qr
+                            + msg.qr
                             + "'>"
-                            + msg.uri+ ".png"
+                            + msg.qr
                             + "</a></div>"
                         }
                         else {

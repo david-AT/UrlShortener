@@ -1,17 +1,13 @@
 package urlshortener.web;
 
-import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.servlet.http.HttpServletRequest;
 import urlshortener.service.UserAgentsService;
-
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.jayway.jsonpath.internal.function.ParamType.JSON;
 
 @RestController
 public class UserAgentsController {

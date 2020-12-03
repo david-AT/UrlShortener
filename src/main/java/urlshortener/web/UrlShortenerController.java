@@ -9,15 +9,16 @@ import org.springframework.web.bind.annotation.*;
 import urlshortener.domain.ShortURL;
 import urlshortener.repository.AccesibleURLRepository;
 import urlshortener.service.ClickService;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import urlshortener.service.QRService;
 import urlshortener.service.ShortURLService;
 import urlshortener.service.UserAgentsService;
-
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @RestController
@@ -27,15 +28,17 @@ public class UrlShortenerController {
   private final ClickService clickService;
   private final AccesibleURLRepository accesibleURLRepository;
   private final UserAgentsService userAgentsService;
+  private final QRService qrService;
 
   //--------------------------------CONSTRUCTOR--------------------------------
 
   public UrlShortenerController(ShortURLService shortUrlService, ClickService clickService, AccesibleURLRepository accesibleURLRepository,
-                                UserAgentsService userAgentsService) {
+                                UserAgentsService userAgentsService, QRService qrService) {
     this.shortUrlService = shortUrlService;
     this.clickService = clickService;
     this.userAgentsService = userAgentsService;
     this.accesibleURLRepository = accesibleURLRepository;
+    this.qrService = qrService;
   }
 
   //----------------------------FUNCIONES-PRIVADAS-----------------------------
@@ -51,7 +54,7 @@ public class UrlShortenerController {
   }
 
   // Función que genera el código QR a través de una URL
-  private byte[] generateQRCodeImage(String barcodeText) throws Exception {
+  public static byte[] generateQRCodeImage(String barcodeText) throws Exception {
     ByteArrayOutputStream stream = QRCode
             .from(barcodeText)
             .withSize(200, 200)
@@ -101,32 +104,8 @@ public class UrlShortenerController {
       HttpHeaders h = new HttpHeaders();
       h.setLocation(su.getUri());
       if (quiereQR != null) {
-        if (su.getQR() == null) {
-
-          CompletableFuture<byte[]> completableFuture
-                  = CompletableFuture.supplyAsync(() -> {
-            try {
-              return generateQRCodeImage(su.getUri().toString());
-            }
-            catch (Exception e) {
-              e.printStackTrace();
-            }
-            return null;
-          });
-
-          CompletableFuture<byte[]> future = completableFuture
-                  .thenApply(s -> su.setQR(s));
-
-          Thread generarQRAsync = new Thread(() -> {
-            try {
-              su.setQR(generateQRCodeImage(su.getUri().toString()));
-            }
-            catch (Exception e) {
-              e.printStackTrace();
-            }
-          });
-          generarQRAsync.start();
-        }
+        URL crearURL = linkTo(methodOn(UrlShortenerController.class).darQR2(su.getHash())).toUri().toURL();
+        su.setQR(crearURL);
       }
       return new ResponseEntity<>(su, h, HttpStatus.CREATED);
     }
@@ -135,4 +114,16 @@ public class UrlShortenerController {
     }
   }
 
+  // FUnción encargada de devolver la imagen del QR
+  @RequestMapping(value = "/qr/{id}", method = RequestMethod.GET, produces = "image/png")
+  public ResponseEntity<byte[]> darQR2(@PathVariable String id) {
+    try {
+      URL crearURL = linkTo(methodOn(UrlShortenerController.class).redirectTo(id, null, null)).toUri().toURL();
+      byte[] QRcode = generateQRCodeImage(crearURL.toString());
+      return new ResponseEntity<>(QRcode, HttpStatus.OK);
+    }
+    catch(Exception e){
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+  }
 }

@@ -1,6 +1,7 @@
 package urlshortener.domain;
 
 import java.net.URI;
+import java.net.URL;
 import java.sql.Date;
 
 public class ShortURL {
@@ -15,7 +16,7 @@ public class ShortURL {
   private Boolean safe;
   private String ip;
   private String country;
-  private byte[] qr;
+  private URL qr;
 
   public ShortURL(String hash, String target, URI uri, String sponsor,
                   Date created, String owner, Integer mode, Boolean safe, String ip,
@@ -30,7 +31,6 @@ public class ShortURL {
     this.safe = safe;
     this.ip = ip;
     this.country = country;
-    this.qr = null;
   }
 
   public ShortURL() {
@@ -76,7 +76,7 @@ public class ShortURL {
     return country;
   }
 
-  public byte[] getQR() { return qr; }
+  public URL getQR() { return qr; }
 
-  public void setQR( byte[] QRcode ) { this.qr = QRcode; }
+  public void setQR( URL qrURL ) { this.qr = qrURL; }
 }
