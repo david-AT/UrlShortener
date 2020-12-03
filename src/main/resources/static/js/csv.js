@@ -46,12 +46,12 @@ function disconnect() {
 
 // Treat receive message
 function showMessage(message) {
-    $("#greetings").append("<tr><td>URL Acortada: " + message + "</td></tr>");
-    $("#greetings").append("<tr><td>   --> Quedan " + ((tamCSV-cont)-1) + " URL por comprobar</td></tr>");
+    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+    $("#greetings").append("<tr><td>[Quedan " + ((tamCSV-cont)-1) + " URL por comprobar]</td></tr>");
     contenidoCSV.push(message);
     cont +=1;
     if (cont==tamCSV) {
-        $("#greetings").append("<button onclick=\"downloadFile()\">Download file</button>");
+        $("#greetings").append("<button onclick=\"downloadFile()\">Download CSV file</button>");
         cont = 1;
         tamCSV = 0;
         disconnect();
