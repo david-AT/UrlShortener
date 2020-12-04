@@ -12,25 +12,18 @@ var cont = 1;
 var contenidoCSV = [];
 var tamCSV = 0;
 
-// Change the boton status
-function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-}
- 
 // Connect WebSocket
 function connect() {
-    $("#greetings").html("");
+    // Clean last data
+    $("#CSVresult").html("");
+    contenidoCSV = [];
+    console.log('Intentando conectar ...');
     var socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/websocketClient', function (shortURL) {
-            showMessage(JSON.parse(greeting.body).content);
+            showMessage(JSON.parse(shortURL.body).content);
         });
     });
 }
@@ -40,18 +33,28 @@ function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
     }
-    setConnected(false);
     console.log("Disconnected");
 }
 
 // Treat receive message
 function showMessage(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
-    $("#greetings").append("<tr><td>[Quedan " + ((tamCSV-cont)-1) + " URL por comprobar]</td></tr>");
+    message = window.location.protocol + "//" + window.location.host + message;
+
+    // Give feedback on screen
+    var msgSplitted = message.split(",");
+    if (msgSplitted[2]=="VALID"){
+        $("#CSVresult").append("<tr><td> URL " + msgSplitted[1] + " shortened successfully</td><td> | " 
+            + ((tamCSV-cont)-1) + " left |</td></tr>");
+    }else{
+        $("#CSVresult").append("<tr><td> URL " + msgSplitted[1] + " NOT shortened</td><td> | " 
+            + ((tamCSV-cont)-1) + " left |</td></tr>");
+    }
+
+    // Save msg received
     contenidoCSV.push(message);
     cont +=1;
     if (cont==tamCSV) {
-        $("#greetings").append("<button onclick=\"downloadFile()\">Download CSV file</button>");
+        $("#CSVresult").append("<button onclick=\"downloadFile()\">Download CSV file</button>");
         cont = 1;
         tamCSV = 0;
         disconnect();
@@ -116,7 +119,6 @@ function arrayObjToCsv(ar) {
 // Download file button function
 function downloadFile() {
     arrayObjToCsv(contenidoCSV);
-    contenidoCSV = [];
 }
 
 // Sends all URLs in the file
@@ -135,7 +137,7 @@ $(function () {
         // Wait 2 seconds for doing the WebSocket conecction
         setTimeout(() => {  
             console.log("Tiempo de conexión agotado");
-            Papa.parse(document.getElementById('files').files[0], {
+            Papa.parse(document.getElementById('csv').files[0], {
                 download: true,
                 header: false,
                 complete: function(results){

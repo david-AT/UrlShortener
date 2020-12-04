@@ -1,3 +1,8 @@
+/*
+ * Clase actualemte inútil, se utilizaba para acortar CSVs 
+ * de forma no escalable. 
+ */
+
 package urlshortener.web;
 
 import java.util.*;
@@ -56,7 +61,6 @@ public class CsvShortenerController {
     StringWriter strW = new StringWriter();
     CSVWriter writeCSV = new CSVWriter(strW);
     for (int i = 0; i < URLs.length; i++){
-      // TODO: Cuando se haga escalable, quitar el booleano de "accesibles"
       String[] newLine = {URLs[i],acortadas.get(i),accesibles.get(i).toString()};
       writeCSV.writeNext(newLine);
     }
@@ -66,8 +70,10 @@ public class CsvShortenerController {
 
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
-  // Función encargada de coger el CSV subido por el usuario y acortar el contenido
-  @RequestMapping(value = "/linkCSV", method = RequestMethod.POST)
+  // Función encargada de coger el CSV subido por el usuario y acortar el contenido.
+  
+  // Descomentar la siguiente línea para acortar CSV sin escalar:
+  //@RequestMapping(value = "/linkCSV", method = RequestMethod.POST)
   public ResponseEntity<String> shortenerCSV(@RequestParam("csv") MultipartFile csv,
                                             @RequestParam(value = "sponsor", required = false) String sponsor,
                                             HttpServletRequest request) 

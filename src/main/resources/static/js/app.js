@@ -37,7 +37,9 @@ $(document).ready(
                     }
                 });
             });
-        
+            
+        // Descomentar la siguiente sección para acortar CSV sin escalar:
+        /*
         $("#CSVshortener").submit(
             function (event) {
                 event.preventDefault();
@@ -65,6 +67,7 @@ $(document).ready(
                     }
                 });
             });
+        */
 
         $("#showUserAgents").submit(
             function (event) {

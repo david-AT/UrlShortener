@@ -13,14 +13,14 @@ import urlshortener.service.ShortURLService;
 import urlshortener.repository.AccesibleURLRepository;
 
 @Controller
-public class WebSocketController {
+public class CsvWebSocketController {
 
   private final ShortURLService shortUrlService;
   private final AccesibleURLRepository accesibleURLRepository;
 
   //--------------------------------CONSTRUCTOR--------------------------------
 
-  public WebSocketController(ShortURLService shortUrlService,
+  public CsvWebSocketController(ShortURLService shortUrlService,
                                 AccesibleURLRepository accesibleURLRepository) {
     this.shortUrlService = shortUrlService;
     this.accesibleURLRepository = accesibleURLRepository;
@@ -31,11 +31,6 @@ public class WebSocketController {
   @MessageMapping("/websocketServer")
   @SendTo("/topic/websocketClient")
   public Reply shortURL(URLMessage message) throws Exception {
-    
-    // Delay simulado entre 2 y 5 segundos.
-    // Random r = new Random();
-    // int valorDado = r.nextInt(3000)+2000;
-    // Thread.sleep(valorDado);
 
     // Test URL accesible
     boolean accesible = accesibleURLRepository.esAccesibleURL(message.getName());
@@ -43,9 +38,9 @@ public class WebSocketController {
     // Short the URL
     String shorted = "";
     if (accesible) {
-      shorted = ((shortUrlService.save(message.getName(), "", "")).getUri()).toString() + ", VALID";
+      shorted = ((shortUrlService.save(message.getName(), "", "")).getUri()).toString() + "," + message.getName() + ",VALID";
     }else{
-      shorted = message.getName() + ", INVALID";
+      shorted = "NULL," + message.getName() + ",INVALID";
     }
 
     // Return result
