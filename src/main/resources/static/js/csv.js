@@ -8,6 +8,7 @@
 // ******************************************************************
 
 var stompClient = null;
+var connected = false;
 var cont = 1;
 var contenidoCSV = [];
 var tamCSV = 0;
@@ -32,6 +33,7 @@ function connect() {
 function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
+        connected = false;
     }
     console.log("Disconnected");
 }
@@ -133,18 +135,23 @@ function treatURLs(results) {
 // Upload file action
 $(function () {
     $( "#submit-file" ).click(function() { 
-        connect();
-        // Wait 2 seconds for doing the WebSocket conecction
-        setTimeout(() => {  
-            console.log("Tiempo de conexión agotado");
-            Papa.parse(document.getElementById('csv').files[0], {
-                download: true,
-                header: false,
-                complete: function(results){
-                    console.log(results);
-                    treatURLs(results);
-                }
-            });
-        },2000);
+        if (!connected){
+            connected = true;
+            connect();
+            // Wait 2 seconds for doing the WebSocket conecction
+            setTimeout(() => {  
+                console.log("Tiempo de conexión agotado");
+                Papa.parse(document.getElementById('csv').files[0], {
+                    download: true,
+                    header: false,
+                    complete: function(results){
+                        console.log(results);
+                        treatURLs(results);
+                    }
+                });
+            },2000);
+        } else {
+            console.log("Conexion establecida pendiente");
+        }
     });
 });
