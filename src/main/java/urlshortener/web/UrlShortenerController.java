@@ -5,7 +5,6 @@ import net.glxn.qrgen.javase.QRCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import urlshortener.domain.ShortURL;
 import urlshortener.repository.AccesibleURLRepository;
@@ -20,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 @RestController
@@ -31,7 +29,6 @@ public class UrlShortenerController {
   private final AccesibleURLRepository accesibleURLRepository;
   private final UserAgentsService userAgentsService;
   private final QRService qrService;
-  private CompletableFuture<Void> qrs;
 
   //--------------------------------CONSTRUCTOR--------------------------------
 
@@ -72,12 +69,6 @@ public class UrlShortenerController {
     return imageInByte;
   }
 
-  @Async
-  public void asyncGenerateQRCodeImage(URL crearURL, String hash) throws Exception {
-    byte[] QRcode = generateQRCodeImage(crearURL.toString());
-    qrService.anyadirQR(hash, QRcode);
-  }
-
   //----------------------------FUNCIONES-PÚBLICAS-----------------------------
 
   // FUnción encargada de hacer la redirección (GET)
@@ -116,7 +107,7 @@ public class UrlShortenerController {
       if (quiereQR != null) {
         URL crearURL = linkTo(methodOn(UrlShortenerController.class).darQR2(su.getHash())).toUri().toURL();
         su.setQR(crearURL);
-        asyncGenerateQRCodeImage(crearURL, su.getHash());
+        qrService.asyncGenerateQRCodeImage(su.getUri().toString(), su.getHash());
       }
       return new ResponseEntity<>(su, h, HttpStatus.CREATED);
     }
@@ -130,8 +121,10 @@ public class UrlShortenerController {
   public ResponseEntity<byte[]> darQR2(@PathVariable String id) {
     try {
       byte[] QRcode = qrService.devolverQR(id);
-      while (QRcode == null) {
-        QRcode = qrService.devolverQR(id);
+      if (QRcode == null) { // Si no se ha creado aún el QR, se crea.
+        URL crearURL = linkTo(methodOn(UrlShortenerController.class).redirectTo(id, null, null)).toUri().toURL();
+        QRcode = generateQRCodeImage(crearURL.toString());
+        qrService.anyadirQR(id, QRcode);
       }
       return new ResponseEntity<>(QRcode, HttpStatus.OK);
     }
