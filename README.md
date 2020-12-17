@@ -10,11 +10,11 @@ The __project__ is a [Spring Boot](http://docs.spring.io/spring-boot/docs/curren
 
 New functionalities added:
 
-* __Check accesible url __: before shortening the URL it is checked that it returns a `200` response`.
-* __Database info __: In the endpoint `/actuator/info` you can see information about the number of clicks that each shortened URL has.
-* __User Agents __: View information on current user agents.
-* __Short CSV __: The application allows shortening the URLs of a `CSV`, returning another with the results (scalable with `Websockets`).
-* __Get QR code __: The application can generate a `QR code` asynchronously when a URL is shortened.
+* __Check accesible url__: Before shortening the URL it is checked that it returns a `200` response.
+* __Database info__: In the endpoint `/actuator/info` you can see information about the number of clicks that each shortened URL has.
+* __User Agents__: View information on current user agents.
+* __Short CSV__: The application allows shortening the URLs of a `CSV`, returning another with the results (scalable with `Websockets`).
+* __Get QR code__: The application can generate a `QR` code asynchronously when a URL is shortened.
 
 The application can be run in Linux and macOS as follows:
 
@@ -29,7 +29,7 @@ $ gradle.bat bootRun
 
 Gradle will compile project and then run it. Now you have a shortener service running at port 8080. 
 
-The main page is accessible from the browser a the URL:
+The APP main page is accessible from the browser a the URL:
 ```
 localhost:8080
 ```
