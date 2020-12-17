@@ -16,6 +16,8 @@ New functionalities added:
 * __Short CSV__: The application allows shortening the URLs of a `CSV`, returning another with the results (scalable with `Websockets`).
 * __Get QR code__: The application can generate a `QR` code asynchronously when a URL is shortened.
 
+Link to the presentation made in class -> [presentacionProyecto_GrupoI_IW.pdf](https://github.com/david-AT/UrlShortener/blob/master/presentacionProyecto_GrupoI_IW.pdf)
+
 The application can be run in Linux and macOS as follows:
 
 ```
