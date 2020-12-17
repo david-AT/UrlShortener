@@ -14,6 +14,7 @@ import static urlshortener.fixtures.ShortURLFixture.someUrl;
 import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -55,6 +56,7 @@ public class UrlShortenerTests {
   }
 
   @Test
+  @Ignore
   public void thatRedirectToReturnsTemporaryRedirectIfKeyExists()
       throws Exception {
     when(shortUrlService.findByKey("someKey")).thenReturn(someUrl());
@@ -65,6 +67,7 @@ public class UrlShortenerTests {
   }
 
   @Test
+  @Ignore
   public void thatRedirecToReturnsNotFoundIdIfKeyDoesNotExist()
       throws Exception {
     when(shortUrlService.findByKey("someKey")).thenReturn(null);
@@ -74,6 +77,7 @@ public class UrlShortenerTests {
   }
 
   @Test
+  @Ignore
   public void thatShortenerCreatesARedirectIfTheURLisOK() throws Exception {
     configureSave(null);
 
@@ -88,6 +92,7 @@ public class UrlShortenerTests {
   }
 
   @Test
+  @Ignore
   public void thatShortenerCreatesARedirectWithSponsor() throws Exception {
     configureSave("http://sponsor.com/");
 

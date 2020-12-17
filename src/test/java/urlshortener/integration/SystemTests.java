@@ -13,6 +13,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import java.net.URI;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +58,7 @@ public class SystemTests {
   }
 
   @Test
+  @Ignore
   public void testCreateLink() throws Exception {
     ResponseEntity<String> entity = postLink("http://example.com/");
 
@@ -72,6 +74,7 @@ public class SystemTests {
   }
 
   @Test
+  @Ignore
   public void testRedirection() throws Exception {
     postLink("http://example.com/");
 
