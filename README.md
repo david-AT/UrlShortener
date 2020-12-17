@@ -1,15 +1,20 @@
 # Web Engineering 2020-2021 / URL Shortener
 
-[![Build Status](https://travis-ci.com/UNIZAR-30246-WebEngineering/UrlShortener.svg?branch=master)](https://travis-ci.com/UNIZAR-30246-WebEngineering/UrlShortener)
+[![Build Status](https://travis-ci.com/david-AT/UrlShortener.svg?branch=master)](https://travis-ci.com/david-AT/UrlShortener)
 
-This is the start repository for the project developed in this course. 
-
-The __project__ is a [Spring Boot](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application that offers a minimum set of functionalities shared by all subprojects.
+The __project__ is a [Spring Boot](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) application that offers a set of basic functionalities:
 
 * __Short URL creation service__:  `POST /` creates a shortened URL from a URL in the request parameter `url`.
 * __Redirection service__: `GET /{id}` redirects the request to a URL associated with the parameter `id`.
 * __Database service__: Persistence and retrieval of `ShortURL` and `Click` objects.
 
+New functionalities added:
+
+* __Check accesible url __: before shortening the URL it is checked that it returns a `200` response`.
+* __Database info __: In the endpoint `/actuator/info` you can see information about the number of clicks that each shortened URL has.
+* __User Agents __: View information on current user agents.
+* __Short CSV __: The application allows shortening the URLs of a `CSV`, returning another with the results (scalable with `Websockets`).
+* __Get QR code __: The application can generate a `QR code` asynchronously when a URL is shortened.
 
 The application can be run in Linux and macOS as follows:
 
@@ -22,9 +27,14 @@ or in Windows
 $ gradle.bat bootRun
 ```
 
-Gradle will compile project and then run it
-Now you have a shortener service running at port 8080. 
-You can test that it works as follows:
+Gradle will compile project and then run it. Now you have a shortener service running at port 8080. 
+
+The main page is accessible from the browser a the URL:
+```
+localhost:8080
+```
+
+To check the correct operation from the terminal you can do:
 
 ```bash
 $ curl -v -d "url=http://www.unizar.es/" -X POST http://localhost:8080/link
