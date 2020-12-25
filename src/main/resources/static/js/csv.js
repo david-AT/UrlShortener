@@ -23,7 +23,7 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/websocketClient', function (shortURL) {
+        stompClient.subscribe('/user/topic/websocketClient', function (shortURL) {
             showMessage(JSON.parse(shortURL.body).content);
         });
     });
