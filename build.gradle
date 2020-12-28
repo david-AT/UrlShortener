@@ -35,6 +35,8 @@ dependencies {
 	implementation 'org.webjars:sockjs-client:1.0.2'
 	implementation 'org.webjars:stomp-websocket:2.3.3'
 
+    implementation 'org.springdoc:springdoc-openapi-ui:1.5.2'
+
     implementation group: 'net.glxn.qrgen', name: 'javase', version: '2.0'
     implementation group: 'eu.bitwalker', name: 'UserAgentUtils', version: '1.17'
 
