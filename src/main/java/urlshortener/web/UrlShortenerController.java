@@ -2,9 +2,7 @@ package urlshortener.web;
 
 import eu.bitwalker.useragentutils.UserAgent;
 import net.glxn.qrgen.javase.QRCode;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import urlshortener.domain.ShortURL;
 import urlshortener.repository.AccesibleURLRepository;
@@ -19,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 
 @RestController
@@ -76,13 +75,14 @@ public class UrlShortenerController {
   public ResponseEntity<?> redirectTo(@PathVariable String id, @RequestHeader("User-Agent") String agents,
                                       HttpServletRequest request) {
     ShortURL l = shortUrlService.findByKey(id);
+    if ( agents != null ) {
+      UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+      String[] datos = {userAgent.getBrowser().getName(), userAgent.getOperatingSystem().getName()};
+      this.userAgentsService.updateInformation(datos);
+    }
+
     if (l != null) {
       clickService.saveClick(id, extractIP(request));
-      if ( agents != null ) {
-        UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
-        String[] datos = {userAgent.getBrowser().getName(), userAgent.getOperatingSystem().getName()};
-        this.userAgentsService.updateInformation(datos);
-      }
       return createSuccessfulRedirectToResponse(l);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -105,9 +105,13 @@ public class UrlShortenerController {
       h.setLocation(su.getUri());
 
       if (quiereQR != null) {
+        su.setquiereQR(true);
         URL crearURL = linkTo(methodOn(UrlShortenerController.class).darQR2(su.getHash())).toUri().toURL();
         su.setQR(crearURL);
         qrService.asyncGenerateQRCodeImage(su.getUri().toString(), su.getHash());
+      }
+      else {
+        su.setquiereQR(false);
       }
       return new ResponseEntity<>(su, h, HttpStatus.CREATED);
     }
@@ -120,16 +124,26 @@ public class UrlShortenerController {
   @RequestMapping(value = "/qr/{id}", method = RequestMethod.GET, produces = "image/png")
   public ResponseEntity<byte[]> darQR2(@PathVariable String id) {
     try {
+      URL crearURL = linkTo(methodOn(UrlShortenerController.class).redirectTo(id, null, null)).toUri().toURL();
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.setLocation(URI.create(crearURL.toString()));
+
       byte[] QRcode = qrService.devolverQR(id);
+
       if (QRcode == null) { // Si no se ha creado aún el QR, se crea.
-        URL crearURL = linkTo(methodOn(UrlShortenerController.class).redirectTo(id, null, null)).toUri().toURL();
         QRcode = generateQRCodeImage(crearURL.toString());
         qrService.anyadirQR(id, QRcode);
       }
-      return new ResponseEntity<>(QRcode, HttpStatus.OK);
+      CacheControl cacheControl = CacheControl.maxAge(60*60*24*365, TimeUnit.SECONDS).noTransform().mustRevalidate();
+      responseHeaders.setCacheControl(cacheControl.toString());
+
+      responseHeaders.setContentType(MediaType.IMAGE_PNG);
+      return new ResponseEntity<>(QRcode, responseHeaders, HttpStatus.OK);
     }
     catch(Exception e){
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
   }
+
+
 }
