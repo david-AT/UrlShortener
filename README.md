@@ -36,6 +36,11 @@ The APP main page is accessible from the browser a the URL:
 localhost:8080
 ```
 
+The `open API` documentation of the APIs is accessible at the URL ([web reference](https://www.baeldung.com/spring-rest-openapi-documentation)):
+```
+localhost:8080/openapi.html
+```
+
 To check the correct operation from the terminal you can do:
 
 ```bash
