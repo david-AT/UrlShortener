@@ -10,11 +10,11 @@ $(document).ready(
                     success: function (msg) {
                         console.log(msg)
                         if (msg.qr != null) {
-                            resultado = "<div class ='alert alert-success lead'><div target='_blank' href='"
+                            resultado = "<div class ='alert alert-success lead'><a target='_blank' href='"
                             + msg.uri
                             + "'>"
                             + msg.uri
-                            + "</div>"
+                            + "</a></div>"
 
                             + "<div class ='alert alert-success lead'><a target='_blank' href='"
                             + msg.qr
