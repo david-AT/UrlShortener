@@ -25,6 +25,10 @@ public class UserAgentsRepositoryImpl implements UserAgentsRepository {
   // Función encargada de actualizar la información de los navegadores y sistemas operativos que han usado la
   // funcionalidad userAgents
   public void updateInformation (String[] info) {
+
+
+
+    
     StringBuilder browser = new StringBuilder();
     String aux = info[0];
     for ( int i = 0; !Character.toString(aux.charAt(i)).equals(" "); i++) {

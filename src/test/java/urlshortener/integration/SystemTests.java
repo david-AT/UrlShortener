@@ -58,7 +58,6 @@ public class SystemTests {
   }
 
   @Test
-  @Ignore
   public void testCreateLink() throws Exception {
     ResponseEntity<String> entity = postLink("http://example.com/");
 
@@ -74,7 +73,6 @@ public class SystemTests {
   }
 
   @Test
-  @Ignore
   public void testRedirection() throws Exception {
     postLink("http://example.com/");
 
@@ -88,6 +86,4 @@ public class SystemTests {
     parts.add("url", url);
     return restTemplate.postForEntity("/link", parts, String.class);
   }
-
-
 }
