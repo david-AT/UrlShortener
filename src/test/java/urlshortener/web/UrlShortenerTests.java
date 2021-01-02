@@ -80,31 +80,27 @@ public class UrlShortenerTests {
   }
 
   @Test
-  @Ignore
   public void thatRedirectToReturnsTemporaryRedirectIfKeyExists()
       throws Exception {
     when(shortUrlService.findByKey("someKey")).thenReturn(someUrl());
-
-    mockMvc.perform(get("/{id}", "someKey")).andDo(print())
+    mockMvc.perform(get("/{id}", "someKey").header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")).andDo(print())
         .andExpect(status().isTemporaryRedirect())
         .andExpect(redirectedUrl("http://example.com/"));
   }
 
   @Test
-  @Ignore
   public void thatRedirecToReturnsNotFoundIdIfKeyDoesNotExist()
       throws Exception {
     when(shortUrlService.findByKey("someKey")).thenReturn(null);
 
-    mockMvc.perform(get("/{id}", "someKey")).andDo(print())
+    mockMvc.perform(get("/{id}", "someKey").header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")).andDo(print())
         .andExpect(status().isNotFound());
   }
 
   @Test
-  @Ignore
   public void thatShortenerCreatesARedirectIfTheURLisOK() throws Exception {
     configureSave(null);
-
+    when(accesibleURLRepository.esAccesibleURL(any())).thenReturn(true);
     mockMvc.perform(post("/link").param("url", "http://example.com/"))
         .andDo(print())
         .andExpect(redirectedUrl("http://localhost/f684a3c4"))
@@ -116,10 +112,9 @@ public class UrlShortenerTests {
   }
 
   @Test
-  @Ignore
   public void thatShortenerCreatesARedirectWithSponsor() throws Exception {
     configureSave("http://sponsor.com/");
-
+    when(accesibleURLRepository.esAccesibleURL(any())).thenReturn(true);
     mockMvc.perform(
         post("/link").param("url", "http://example.com/").param(
             "sponsor", "http://sponsor.com/")).andDo(print())
