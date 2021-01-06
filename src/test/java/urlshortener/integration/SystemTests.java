@@ -6,8 +6,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
@@ -85,5 +85,45 @@ public class SystemTests {
     MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
     parts.add("url", url);
     return restTemplate.postForEntity("/link", parts, String.class);
+  }
+
+  @Test
+  public void testDBInfoEndpoint1url() throws Exception {
+    String url1 = "http://example.org/";
+
+    postLink(url1);
+    String expectedInfo = "{\"Information about App Data Base\":[\"(0 clicks) " 
+                          + url1 + "\"]}";
+
+    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
+    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
+    assertEquals(expectedInfo, entity.getBody());
+  }
+
+  @Test
+  public void testDBInfoEndpoint2url() throws Exception {
+    String url1 = "http://example.org/";
+    String url2 = "https://www.google.com/";
+
+    postLink(url1);
+    postLink(url2);
+    String expectedInfo = "{\"Information about App Data Base\":[\"(0 clicks) " 
+                          + url2 + "\",\"(0 clicks) " + url1 + "\"]}";
+
+    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
+    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
+    assertEquals(expectedInfo, entity.getBody());
+  }
+
+  @Test
+  public void testDBInfoEndpointEmpty() throws Exception {
+    String expectedInfo = "{\"Information about App Data Base\":[]}";
+
+    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
+    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
+    assertEquals(expectedInfo, entity.getBody());
   }
 }
