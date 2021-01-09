@@ -6,13 +6,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import java.net.URI;
 import org.junit.Test;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +98,7 @@ public class SystemTests {
     ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
     assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    assertEquals(expectedInfo, entity.getBody());
+    Assert.assertEquals(expectedInfo, entity.getBody());
   }
 
   @Test
@@ -114,7 +114,7 @@ public class SystemTests {
     ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
     assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    assertEquals(expectedInfo, entity.getBody());
+    Assert.assertEquals(expectedInfo, entity.getBody());
   }
 
   @Test
@@ -124,6 +124,6 @@ public class SystemTests {
     ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
     assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    assertEquals(expectedInfo, entity.getBody());
+    Assert.assertEquals(expectedInfo, entity.getBody());
   }
 }
