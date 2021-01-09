@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import net.minidev.json.JSONObject;
 
 
 @RestController
@@ -85,7 +86,9 @@ public class UrlShortenerController {
       clickService.saveClick(id, extractIP(request));
       return createSuccessfulRedirectToResponse(l);
     } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      JSONObject info = new JSONObject();
+      info.put("Error", "URL with ID " + id + " not validated yet");
+      return new ResponseEntity<>(info, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -144,6 +147,5 @@ public class UrlShortenerController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
   }
-
 
 }
