@@ -68,6 +68,36 @@ public class SystemTests {
   }
 
   @Test
+  public void testDBInfoEndpoint1url() throws Exception {
+    String url1 = "http://example.org/";
+
+    postLink(url1);
+    String expectedInfo = "{\"Information about App Data Base\":[\"(0 clicks) " 
+                          + url1 + "\"]}";
+
+    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
+    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
+    assertThat(entity.getBody(), is(expectedInfo));
+  }
+
+  @Test
+  public void testDBInfoEndpoint2url() throws Exception {
+    String url1 = "http://example.org/";
+    String url2 = "https://www.google.com/";
+
+    postLink(url1);
+    postLink(url2);
+    String expectedInfo = "{\"Information about App Data Base\":[\"(0 clicks) " 
+                          + url2 + "\",\"(0 clicks) " + url1 + "\"]}";
+
+    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
+    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
+    assertThat(entity.getBody(), is(expectedInfo));
+  }
+
+  @Test
   public void testCreateLink() throws Exception {
     ResponseEntity<String> entity = postLink("http://example.com/");
 
@@ -97,31 +127,4 @@ public class SystemTests {
     return restTemplate.postForEntity("/link", parts, String.class);
   }
 
-  @Test
-  public void testDBInfoEndpoint1url() throws Exception {
-    String url1 = "http://example.com/";
-
-    String expectedInfo = "{\"Information about App Data Base\":[\"(0 clicks) " 
-                          + url1 + "\"]}";
-
-    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
-    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    assertThat(entity.getBody(), is(expectedInfo));
-  }
-
-  @Test
-  public void testDBInfoEndpoint2url() throws Exception {
-    String url1 = "http://example.com/";
-    String url2 = "https://www.google.com/";
-
-    postLink(url2);
-    String expectedInfo = "{\"Information about App Data Base\":[\"(0 clicks) " 
-                          + url2 + "\",\"(0 clicks) " + url1 + "\"]}";
-
-    ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
-    assertThat(entity.getStatusCode(), is(HttpStatus.OK));
-    assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    assertThat(entity.getBody(), is(expectedInfo));
-  }
 }
