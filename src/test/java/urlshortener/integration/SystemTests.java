@@ -98,7 +98,7 @@ public class SystemTests {
     ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
     assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    Assert.assertEquals(expectedInfo, entity.getBody());
+    assertThat(entity.getBody(), is(expectedInfo));
   }
 
   @Test
@@ -114,7 +114,7 @@ public class SystemTests {
     ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
     assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    Assert.assertEquals(expectedInfo, entity.getBody());
+    assertThat(entity.getBody(), is(expectedInfo));
   }
 
   @Test
@@ -124,6 +124,6 @@ public class SystemTests {
     ResponseEntity<String> entity = restTemplate.getForEntity("/actuator/info", String.class);
     assertThat(entity.getStatusCode(), is(HttpStatus.OK));
     assertThat(entity.getHeaders().getContentType(), is(new MediaType("application", "json")));
-    Assert.assertEquals(expectedInfo, entity.getBody());
+    assertThat(entity.getBody(), is(expectedInfo));
   }
 }
