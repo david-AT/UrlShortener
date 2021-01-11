@@ -18,6 +18,8 @@ New functionalities added:
 
 Link to the presentation made in class -> [presentacionProyecto_GrupoI_IW.pdf](presentacionProyecto_GrupoI_IW.pdf)
 
+Link to the final presentation -> [presentacionFinalProyecto_GrupoI_IW.pdf](presentacionFinalProyecto_GrupoI_IW.pdf)
+
 The application can be run in Linux and macOS as follows:
 
 ```
